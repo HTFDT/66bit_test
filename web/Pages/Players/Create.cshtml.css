@@ -1,0 +1,7 @@
+.team-input {
+    display: none;
+}
+
+.team-input.active {
+    display: block;
+}
