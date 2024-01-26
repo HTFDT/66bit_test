@@ -1,0 +1,65 @@
+﻿@page
+@using web.Models
+@model web.Pages.Players.EditModel
+
+@{
+    ViewData["Title"] = "Редактировать игрока";
+}
+
+<h1>Редактировать игрока @Model.ViewModel.LastName @Model.ViewModel.FirstName</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ViewModel.LastName" class="control-label"></label>
+                <input asp-for="ViewModel.LastName" class="form-control" />
+                <span asp-validation-for="ViewModel.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ViewModel.FirstName" class="control-label"></label>
+                <input asp-for="ViewModel.FirstName" class="form-control" />
+                <span asp-validation-for="ViewModel.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ViewModel.Gender" class="control-label"></label>
+                <select asp-for="ViewModel.Gender" asp-items="Html.GetEnumSelectList<Gender>()" class="form-control">
+                </select>
+                <span asp-validation-for="ViewModel.Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ViewModel.DateOfBirth" class="control-label"></label>
+                <input asp-for="ViewModel.DateOfBirth" class="form-control" />
+                <span asp-validation-for="ViewModel.DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ViewModel.Country" class="control-label"></label>
+                <select asp-for="ViewModel.Country" asp-items="Html.GetEnumSelectList<Country>()" class="form-control">
+                </select>
+                <span asp-validation-for="ViewModel.Country" class="text-danger"></span>
+            </div>
+            <div class="form-group team-input team-input--existing">
+                <label asp-for="ViewModel.TeamID" class="control-label"></label>
+                <select asp-for="ViewModel.TeamID" class="form-control">
+                    @foreach (var item in (IList<Team>)ViewData["existingTeams"]!)
+                    {
+                        <option selected="@(item.ID == Model.ViewModel.TeamID)" value="@item.ID">@item.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="ViewModel.TeamID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Назад</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
