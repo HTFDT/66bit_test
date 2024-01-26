@@ -1,7 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using web.Data;
+
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
+builder.WebHost.UseStaticWebAssets();
 
 var app = builder.Build();
 
@@ -11,6 +21,15 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    if (!app.Environment.IsProduction())
+        context.Database.EnsureCreated();
+    else if (app.Environment.IsProduction() && context.Database.GetPendingMigrations().Any())
+        context.Database.Migrate();
 }
 
 app.UseHttpsRedirection();
